@@ -47,11 +47,7 @@ const AddBlog = () => {
               <button type='button' onClick={generateContent} className='absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer'>Generate With AI</button>
             </div>
           <p className='mt-5'> Blog Category</p>
-<<<<<<< HEAD
-          <select onChange={(e)=>setCategory(e.target.value)} value={category} name="Category" className='mt-2 px-3  py-2 bordrd text-gray-500 border-gray-300 outline-none rounded' >
-=======
-          <select onChange={(e)=>setCategory(e.target.value)} name="Category" className='mt-2 px-3  py-2 bordrd text-gray-500 border-gray-300 outline-none rounded' >
->>>>>>> 5e7d470ac03192bf687201dc9aea471528834bbc
+          <select onChange={(e)=>setCategory(e.target.value)} value={ca} name="Category" className='mt-2 px-3  py-2 bordrd text-gray-500 border-gray-300 outline-none rounded' >
             <option value="">Select category</option>
             {blogCategories.map((item,index)=>{
               return <option key={index} value={item}>{item}</option>
