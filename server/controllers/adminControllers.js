@@ -11,9 +11,9 @@ export const adminLogin = async(req,res)=>{
             return res.json({success:false , message:"Invalid Crediential"})
         
         const token = jwt.sign({email},process.env.JWT_SECRET)
-        res.json({seccess:true, token})
+        res.json({success:true, token})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
 
@@ -22,7 +22,7 @@ export const getAllBlogsAdmin = async(req,res)=>{
         const blogs = await Blog.find({}).sort({createdAt: -1}) 
         res.json({success:true,blogs})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
 
@@ -31,7 +31,7 @@ export const getAllComments = async(req,res)=>{
         const comments = await Comment.find({}).populate("blog").sort({createdAt:-1})
         res.json({success:true,comments})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
 
@@ -47,7 +47,7 @@ export const getDashboardData = async(req,res)=>{
         }
         res.json({success:true,getDashboardData})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
 
@@ -57,7 +57,7 @@ export const deleteCommentsById = async(req,res)=>{
         await Comment.findByIdAndDelete(id)
         res.json({success:true,message:"Comment deleted successfully"})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
 
@@ -67,6 +67,6 @@ export const approvedCommentsById = async(req,res)=>{
         await Comment.findByIdAndUpdate(id , {isApproved:true})
         res.json({success:true,message:"Comment Approved successfully"})
     } catch (error) {
-        res.json({seccess:false, message:error.message})
+        res.json({success:false, message:error.message})
     }
 }
