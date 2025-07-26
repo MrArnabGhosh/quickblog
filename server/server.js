@@ -5,6 +5,7 @@ import connectDB from "./db/index.js"
 import adminRouter from "./routes/adminRoutes.js"
 import blogRouter from "./routes/blogRoutes.js"
 
+
 const app = express()
 
 connectDB()
@@ -15,7 +16,7 @@ app.use(express.json())
 
 app.get('/',(req,res)=>res.send("APi is working"))
 app.use('/api/admin',adminRouter)
-app.use('/api/blog',blogRouter)
+
 
 const port = 3000 || process.env.PORT
 

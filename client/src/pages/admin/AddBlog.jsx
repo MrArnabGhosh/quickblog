@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { assets, blogCategories } from '../../assets/assets'
 import Quill from 'quill'
 import { useAppContext } from '../../../context/AppContext'
+import { Axios } from 'axios'
+import toast from 'react-hot-toast'
 
 const AddBlog = () => {
 
@@ -13,12 +15,42 @@ const AddBlog = () => {
 
   const [image, setImage] = useState(false)
   const [title, setTitle] = useState('')
-  const [subtTitle, setSubtTitle] = useState('')
-  const [category, setCategory] = useState('startup')
+  const [subTitle, setSubTitle] = useState('')
+  const [category, setCategory] = useState('Startup')
   const [isPublished, setIsPublished] = useState(false)
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault()
+  const onSubmitHandler = async(e) => {
+    try {
+      e.preventDefault()
+      setIsAdding(true)
+
+      const blog = {
+        title , subTitle, 
+        description:quillRef.current.root.innerHTML,
+        category,isPublished
+      }
+      const formData = new FormData()
+      formData.append('blog',JSON.stringify(blog))
+      formData.append('image',image)
+
+      const {data}= await axios.post('/api/blog/add',formData)
+      console.log(data)
+      if(data.success){
+        toast.success(data.message)
+        setImage(false)
+        setTitle('')
+        quillRef.current.root.innerHTML = ''
+        setCategory('Startup')
+      }
+      else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+       toast.error(error.message)
+    }finally{
+      setIsAdding(false)
+    }
+
   }
 
   const generateContent = async()=>{
@@ -43,7 +75,7 @@ const AddBlog = () => {
             <input type="text" placeholder='Type here' required  className='w-full max-w-lg mt-2 p-2 border border-gray-200 outline-none rounded' onChange={(e)=>setTitle(e.target.value)} value={title}/>
 
             <p className='mt-5'>Sub title</p>
-            <input type="text" placeholder='Type here' required  className='w-full max-w-lg mt-2 p-2 border border-gray-200 outline-none rounded' onChange={(e)=>setSubtTitle(e.target.value)} value={subtTitle}/>
+            <input type="text" placeholder='Type here' required  className='w-full max-w-lg mt-2 p-2 border border-gray-200 outline-none rounded' onChange={(e)=>setSubTitle(e.target.value)} value={subTitle}/>
 
             <p className='mt-5'>Vlog Description</p>
             <div className='max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative'>

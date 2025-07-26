@@ -1,19 +1,46 @@
 import jwt from 'jsonwebtoken'
 import Blog from '../models/BlogModels.js'
 import Comment from '../models/Comment.js'
+import User from '../models/UserModel.js'
 
 
 export const adminLogin = async(req,res)=>{
-    try {
-        const {email,password}= req.body
+   try {
+        const { email, password } = req.body;
 
-        if(email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD )
-            return res.json({success:false , message:"Invalid Crediential"})
-        
-        const token = jwt.sign({email},process.env.JWT_SECRET)
-        res.json({success:true, token})
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required." });
+        }
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // If user doesn't exist, create a new one (implicit registration)
+            user = new User({ email, password });
+            await user.save();
+            // console.log("New user registered:", email);
+            // After saving, you might want to re-fetch the user if you have pre-save hooks for password hashing
+            // Or ensure the saved user object has the hashed password for comparison if needed immediately
+            user = await User.findOne({ email }); // Re-fetch to get the user object with the hashed password if pre-save hook is used.
+                                                 // Or you can trust that `user.save()` updated the `user` object in memory.
+                                                 // In this case, `user.comparePassword` will work because `this.password` in the model is already updated.
+
+        } else {
+            // If user exists, check password
+            const isMatch = await user.comparePassword(password);
+            if (!isMatch) {
+                return res.status(401).json({ success: false, message: "Invalid Credentials." });
+            }
+        }
+
+        // Generate token for both new and existing users
+        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.json({ success: true, message: "Login successful!", token, user: { id: user._id, email: user.email } });
+
     } catch (error) {
-        res.json({success:false, message:error.message})
+        console.error("Login/Registration Error:", error);
+        res.status(500).json({ success: false, message: "Server error during login/registration.", error: error.message });
     }
 }
 
@@ -29,7 +56,7 @@ export const getAllBlogsAdmin = async(req,res)=>{
 export const getAllComments = async(req,res)=>{
     try {
         const comments = await Comment.find({}).populate("blog").sort({createdAt:-1})
-        res.json({success:true,comments})
+        res.json({success:true,comments}) 
     } catch (error) {
         res.json({success:false, message:error.message})
     }
@@ -37,15 +64,15 @@ export const getAllComments = async(req,res)=>{
 
 export const getDashboardData = async(req,res)=>{
     try {
-        const recentBlog = await Blog.find({}).sort({createdAt:-1}).limit(5)
+        const recentBlogs = await Blog.find({}).sort({createdAt:-1}).limit(5)
         const blogs = await Blog.countDocuments()
         const comments = await Comment.countDocuments()
         const drafts = await Blog.countDocuments({isPublished:false})
 
         const dashBoardData = {
-            recentBlog,blogs,comments,drafts
+            recentBlogs,blogs,comments,drafts
         }
-        res.json({success:true,getDashboardData})
+        res.json({success:true,dashBoardData})
     } catch (error) {
         res.json({success:false, message:error.message})
     }
