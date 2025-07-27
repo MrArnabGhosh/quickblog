@@ -18,7 +18,7 @@ export const AppProvider = ({ children })=>{
 
     const fetchBlogs = async ()=>{
         try {
-            const {data} = await  axios.get('api/blog/all')
+            const {data} = await axios.get('api/blog/all')
             data.success ? setBlogs(data.blogs) : toast.error(data.message)
         } catch (error) {
             toast.error(error.message)
@@ -31,7 +31,7 @@ export const AppProvider = ({ children })=>{
         const token = localStorage.getItem('token')
         if(token){
             setToken(token)
-            axios.defaults.headers.common['Authorization'] = `${token}`
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         }
 
     },[])

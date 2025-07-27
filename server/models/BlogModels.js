@@ -8,6 +8,11 @@ const blogSchema = new mongoose.Schema({
     category:{type:String, required:true},
     image:{type:String, required:true},
     isPublished:{type:Boolean, required:true},
+    user: { // <-- This is essential: links a blog to its owner
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true, // A blog must belong to a user
+    }
 },{timestamps:true})
 
 const Blog = mongoose.model('blog',blogSchema)

@@ -6,6 +6,11 @@ const commentSchema = new mongoose.Schema({
     name:{type:String,required:true},
     content:{type:String,required:true},
     isApproved:{type:Boolean,default:false},
+    user: { // <-- This is essential: links a comment to the user who wrote it
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    }
 },{timestamps:true})
 
 const Comment = mongoose.model('comment',commentSchema)

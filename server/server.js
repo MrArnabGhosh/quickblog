@@ -14,9 +14,9 @@ app.use(cors())
 app.use(express.json())
 
 
-app.get('/',(req,res)=>res.send("APi is working"))
-app.use('/api/admin',adminRouter)
 
+app.use('/api/admin',adminRouter)
+app.use('/api/blog',blogRouter)
 
 const port = 3000 || process.env.PORT
 
